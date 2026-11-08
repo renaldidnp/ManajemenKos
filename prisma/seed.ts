@@ -1,5 +1,7 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { betterAuth } from "better-auth";
+import { prismaAdapter } from "better-auth/adapters/prisma";
 import { PrismaClient } from "../src/generated/prisma/client";
 
 const adapter = new PrismaPg({
@@ -8,7 +10,19 @@ const adapter = new PrismaPg({
 
 const prisma = new PrismaClient({ adapter });
 
-async function main() {
+const auth = betterAuth({
+  appName: "Kos",
+  secret: process.env.BETTER_AUTH_SECRET,
+  baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
+  database: prismaAdapter(prisma, {
+    provider: "postgresql",
+  }),
+  emailAndPassword: {
+    enabled: true,
+  },
+});
+
+async function seedKos() {
   const kos = await prisma.kos.upsert({
     where: { slug: "kos-melati" },
     update: {},
@@ -48,6 +62,48 @@ async function main() {
   }
 
   console.log(`Seeded kos "${kos.name}" with ${rooms.length} rooms.`);
+}
+
+async function seedAdmin() {
+  const email = process.env.SEED_ADMIN_EMAIL;
+  const password = process.env.SEED_ADMIN_PASSWORD;
+  const name = process.env.SEED_ADMIN_NAME ?? "Admin Kos";
+
+  if (!email || !password) {
+    console.warn(
+      "Lewati pembuatan admin: SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD belum diisi.",
+    );
+    return;
+  }
+
+  const existing = await prisma.user.findUnique({ where: { email } });
+
+  if (existing) {
+    if (existing.role !== "admin") {
+      await prisma.user.update({
+        where: { id: existing.id },
+        data: { role: "admin" },
+      });
+    }
+    console.log(`Admin "${email}" sudah ada.`);
+    return;
+  }
+
+  await auth.api.signUpEmail({
+    body: { name, email, password },
+  });
+
+  await prisma.user.update({
+    where: { email },
+    data: { role: "admin" },
+  });
+
+  console.log(`Admin "${email}" berhasil dibuat.`);
+}
+
+async function main() {
+  await seedKos();
+  await seedAdmin();
 }
 
 main()

@@ -2,7 +2,7 @@
 
 Aplikasi kos **single-tenant**: landing page, manajemen kos, sistem booking, dan chatbot berbasis web widget.
 
-> Status: **Fase 1 selesai** — scaffold Next.js, Tailwind, Prisma, Better Auth, database Docker termigrasi, dan seed data contoh.
+> Status: **Sprint 1 selesai** — scaffold, autentikasi (login/register), proteksi route berbasis role, dan seed admin sudah berjalan.
 
 ## Stack
 
@@ -66,6 +66,7 @@ Aplikasi kos **single-tenant**: landing page, manajemen kos, sistem booking, dan
 │  │     └─ webhooks/payment/route.ts
 │  │
 │  ├─ features/              # LOGIKA BISNIS (vertical slice per domain)
+│  │  ├─ auth/               # skema + form login/register + user menu
 │  │  ├─ kos/
 │  │  ├─ rooms/
 │  │  ├─ bookings/
@@ -86,12 +87,15 @@ Aplikasi kos **single-tenant**: landing page, manajemen kos, sistem booking, dan
 │  │  ├─ db.ts               # Prisma singleton + adapter pg
 │  │  ├─ auth.ts             # konfigurasi Better Auth (server)
 │  │  ├─ auth-client.ts      # Better Auth client (browser)
+│  │  ├─ session.ts          # getSession + guard requireAdmin/requireTenant
+│  │  ├─ action-result.ts    # tipe ActionResult seragam
 │  │  ├─ env.ts              # validasi environment (Zod)
 │  │  ├─ utils.ts
 │  │  ├─ storage.ts
 │  │  ├─ rate-limit.ts
 │  │  └─ providers/          # chat (Ollama/OpenAI), payment (stub/Midtrans)
 │  │
+│  ├─ proxy.ts               # proteksi route /admin & /tenant (optimistic)
 │  ├─ generated/            # Prisma Client (gitignored, hasil `db:generate`)
 │  ├─ config/                # site.ts, nav.ts
 │  ├─ hooks/
@@ -147,6 +151,16 @@ features/bookings/server/actions.ts                ("use server")
 - `ChatConversation`, `ChatMessage` — riwayat chatbot
 - `KnowledgeDoc` — knowledge base untuk RAG (embedding `vector`)
 
+## Autentikasi & Role
+
+- **Registrasi** (`/register`) selalu membuat akun dengan role `tenant`.
+- **Admin** dibuat lewat seed menggunakan `SEED_ADMIN_NAME`, `SEED_ADMIN_EMAIL`, dan `SEED_ADMIN_PASSWORD`. Jika env kosong, seed admin dilewati.
+- **Guard**:
+  - `src/proxy.ts` melakukan redirect optimistic untuk `/admin` dan `/tenant` bila cookie sesi tidak ada.
+  - Validasi sebenarnya di server: `requireAdmin()` / `requireTenant()` (`src/lib/session.ts`).
+- **Redirect setelah login**: mengikuti parameter `?next=` bila aman, selain itu `/admin` untuk admin dan `/tenant` untuk penghuni.
+- Logout tersedia lewat menu pengguna di navbar/dashboard.
+
 ## Pengembangan Lokal (offline)
 
 ```bash
@@ -166,6 +180,8 @@ npm run db:seed
 npm run dev
 ```
 
+Isi `SEED_ADMIN_EMAIL` dan `SEED_ADMIN_PASSWORD` di `.env` sebelum `npm run db:seed` untuk membuat akun admin.
+
 Perintah lain: `npm run typecheck`, `npm run lint`, `npm run build`, `npm run db:studio`.
 
 Chatbot lokal memakai **Ollama** (`docker compose --profile ai up -d ollama`) agar tidak butuh koneksi internet. Ganti provider ke OpenAI/Gemini cukup lewat `lib/providers/chat`.
@@ -174,7 +190,7 @@ Chatbot lokal memakai **Ollama** (`docker compose --profile ai up -d ollama`) ag
 
 1. **Setup** ✅ — Next.js, Tailwind, Better Auth, Docker Postgres+pgvector, Prisma, seed.
 2. **Landing page** — hero, listing kos/kamar, galeri, FAQ, CTA booking (placeholder sudah ada).
-3. **Auth & role** — login admin/penghuni + proteksi route.
+3. **Auth & role** ✅ — login/register, seed admin, proteksi route berbasis role, logout.
 4. **Manajemen** — CRUD kos/kamar, penghuni, tagihan & status sewa.
 5. **Booking** — ketersediaan kamar, form, status booking.
 6. **Chatbot** — widget + RAG dari FAQ/data kamar.

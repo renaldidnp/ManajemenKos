@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
+import { UserMenu } from "@/features/auth/components/user-menu";
 
 export default function MarketingLayout({
   children,
@@ -19,20 +20,7 @@ export default function MarketingLayout({
               FAQ
             </Link>
           </nav>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/login"
-              className="rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted"
-            >
-              Masuk
-            </Link>
-            <Link
-              href="/register"
-              className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
-            >
-              Daftar
-            </Link>
-          </div>
+          <UserMenu />
         </div>
       </header>
 
