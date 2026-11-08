@@ -45,7 +45,6 @@ export function LoginForm({ next }: { next?: string }) {
     const { data } = await authClient.getSession();
     const role = (data?.user as { role?: string } | undefined)?.role;
 
-    toast.success("Berhasil masuk.");
     router.replace(resolveTarget(next, role));
     router.refresh();
   }

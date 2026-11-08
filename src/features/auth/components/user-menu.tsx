@@ -3,7 +3,6 @@
 import { LayoutDashboard, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -51,7 +50,6 @@ export function UserMenu() {
 
   async function handleSignOut() {
     await authClient.signOut();
-    toast.success("Berhasil keluar.");
     router.push("/");
     router.refresh();
   }

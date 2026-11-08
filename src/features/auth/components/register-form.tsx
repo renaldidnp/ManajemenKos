@@ -44,7 +44,6 @@ export function RegisterForm() {
       return;
     }
 
-    toast.success("Akun berhasil dibuat.");
     router.replace("/tenant");
     router.refresh();
   }

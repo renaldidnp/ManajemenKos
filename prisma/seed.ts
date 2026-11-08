@@ -42,9 +42,30 @@ async function seedKos() {
   });
 
   const rooms = [
-    { number: "A1", priceMonthly: 750000, size: "3x3 m", capacity: 1 },
-    { number: "A2", priceMonthly: 850000, size: "3x3.5 m", capacity: 1 },
-    { number: "B1", priceMonthly: 1200000, size: "4x4 m", capacity: 2 },
+    {
+      number: "A1",
+      priceMonthly: 750000,
+      size: "3x3 m",
+      capacity: 1,
+      description:
+        "Kamar single dengan kasur nyaman, lemari, kipas angin, dan WiFi. Cocok untuk mahasiswa yang butuh ruang tenang.",
+    },
+    {
+      number: "A2",
+      priceMonthly: 850000,
+      size: "3x3.5 m",
+      capacity: 1,
+      description:
+        "Kamar single yang sedikit lebih luas dengan sirkulasi udara baik, dilengkapi kasur, lemari, kipas angin, dan WiFi.",
+    },
+    {
+      number: "B1",
+      priceMonthly: 1200000,
+      size: "4x4 m",
+      capacity: 2,
+      description:
+        "Kamar sharing untuk 2 orang dengan ruang lebih lega, cocok untuk teman atau pasangan.",
+    },
   ];
 
   for (const room of rooms) {
