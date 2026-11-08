@@ -1,0 +1,77 @@
+model Kos {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  address     String?
+  city        String?
+  province    String?
+  postalCode  String?
+  phone       String?
+  whatsapp    String?
+  priceFrom   Int?
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  images KosImage[]
+  rooms  Room[]
+
+  @@map("kos")
+}
+
+model KosImage {
+  id        String  @id @default(cuid())
+  kosId     String
+  url       String
+  alt       String?
+  sortOrder Int     @default(0)
+
+  kos Kos @relation(fields: [kosId], references: [id], onDelete: Cascade)
+
+  @@index([kosId])
+  @@map("kos_image")
+}
+
+model Room {
+  id           String     @id @default(cuid())
+  kosId        String
+  number       String
+  name         String?
+  description  String?
+  priceMonthly Int
+  size         String?
+  capacity     Int        @default(1)
+  status       RoomStatus @default(AVAILABLE)
+  facilities   String[]   @default([])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  kos      Kos         @relation(fields: [kosId], references: [id], onDelete: Cascade)
+  images   RoomImage[]
+  tenants  Tenant[]
+  bookings Booking[]
+
+  @@unique([kosId, number])
+  @@index([status])
+  @@map("room")
+}
+
+model RoomImage {
+  id        String  @id @default(cuid())
+  roomId    String
+  url       String
+  alt       String?
+  sortOrder Int     @default(0)
+
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@index([roomId])
+  @@map("room_image")
+}
+
+enum RoomStatus {
+  AVAILABLE
+  OCCUPIED
+  MAINTENANCE
+}

@@ -1,0 +1,54 @@
+model Invoice {
+  id          String        @id @default(cuid())
+  number      String        @unique
+  tenantId    String?
+  bookingId   String?       @unique
+  periodStart DateTime
+  periodEnd   DateTime
+  amount      Int
+  status      InvoiceStatus @default(UNPAID)
+  dueDate     DateTime
+  paidAt      DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  tenant   Tenant?   @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  booking  Booking?  @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  payments Payment[]
+
+  @@index([status])
+  @@index([tenantId])
+  @@map("invoice")
+}
+
+enum InvoiceStatus {
+  UNPAID
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+model Payment {
+  id          String        @id @default(cuid())
+  invoiceId   String
+  provider    String        @default("manual")
+  providerRef String?
+  amount      Int
+  status      PaymentStatus @default(PENDING)
+  paidAt      DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+  @@index([status])
+  @@map("payment")
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}

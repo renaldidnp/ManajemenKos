@@ -1,0 +1,30 @@
+model Booking {
+  id              String        @id @default(cuid())
+  code            String        @unique
+  userId          String?
+  roomId          String
+  name            String
+  phone           String
+  email           String?
+  moveInDate      DateTime
+  durationMonths  Int           @default(1)
+  status          BookingStatus @default(PENDING)
+  notes           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  user    User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  room    Room     @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  invoice Invoice?
+
+  @@index([status])
+  @@index([roomId])
+  @@map("booking")
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  EXPIRED
+}

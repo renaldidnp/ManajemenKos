@@ -1,0 +1,32 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: kos-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: kos
+      POSTGRES_PASSWORD: kos
+      POSTGRES_DB: kos
+    ports:
+      - "5432:5432"
+    volumes:
+      - kos_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kos -d kos"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: kos-ollama
+    restart: unless-stopped
+    profiles: ["ai"]
+    ports:
+      - "11434:11434"
+    volumes:
+      - kos_ollama:/root/.ollama
+
+volumes:
+  kos_pgdata:
+  kos_ollama:

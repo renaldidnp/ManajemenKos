@@ -1,0 +1,28 @@
+model Tenant {
+  id               String       @id @default(cuid())
+  userId           String?
+  roomId           String?
+  name             String
+  phone            String
+  email            String?
+  idCardNumber     String?
+  emergencyContact String?
+  status           TenantStatus @default(ACTIVE)
+  startDate        DateTime
+  endDate          DateTime?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  user     User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  room     Room?     @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  invoices Invoice[]
+
+  @@index([status])
+  @@index([roomId])
+  @@map("tenant")
+}
+
+enum TenantStatus {
+  ACTIVE
+  INACTIVE
+}
