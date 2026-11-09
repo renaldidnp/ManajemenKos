@@ -1,4 +1,11 @@
-export type InvoiceStatus = "UNPAID" | "PAID" | "OVERDUE" | "CANCELLED";
+export const INVOICE_STATUSES = [
+  "UNPAID",
+  "PAID",
+  "OVERDUE",
+  "CANCELLED",
+] as const;
+
+export type InvoiceStatus = (typeof INVOICE_STATUSES)[number];
 
 export const invoiceStatusLabels: Record<InvoiceStatus, string> = {
   UNPAID: "Belum dibayar",

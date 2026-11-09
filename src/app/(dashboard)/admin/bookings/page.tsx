@@ -1,3 +1,6 @@
+import { Plus } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { BookingsTable } from "@/features/bookings/components/bookings-table";
 import { getBookings } from "@/features/bookings/server/queries";
 
@@ -12,11 +15,19 @@ export default async function AdminBookingsPage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight">Booking</h1>
-        <p className="mt-2 text-muted-foreground">
-          Kelola pengajuan sewa dan status booking calon penghuni.
-        </p>
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Booking</h1>
+          <p className="mt-2 text-muted-foreground">
+            Kelola pengajuan sewa dan status booking calon penghuni.
+          </p>
+        </div>
+        <Button asChild>
+          <Link href="/admin/bookings/new">
+            <Plus className="size-4" />
+            Tambah booking
+          </Link>
+        </Button>
       </div>
 
       <div className="mb-6 grid gap-4 sm:grid-cols-3">

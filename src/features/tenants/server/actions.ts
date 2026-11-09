@@ -9,6 +9,7 @@ import {
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/session";
 import { toFieldErrors } from "@/lib/validation";
+import { syncRoomStatus } from "@/features/rooms/server/status";
 import { tenantSchema, type TenantInput } from "@/features/tenants/schemas";
 
 function prismaErrorCode(error: unknown): string | undefined {
@@ -50,34 +51,8 @@ async function roomExists(roomId: string | null) {
   return Boolean(room);
 }
 
-async function syncRoomStatus(roomId: string | null | undefined) {
-  if (!roomId) {
-    return;
-  }
-
-  const room = await prisma.room.findUnique({
-    where: { id: roomId },
-    select: { status: true },
-  });
-
-  if (!room || room.status === "MAINTENANCE") {
-    return;
-  }
-
-  const activeTenants = await prisma.tenant.count({
-    where: { roomId, status: "ACTIVE" },
-  });
-  const nextStatus = activeTenants > 0 ? "OCCUPIED" : "AVAILABLE";
-
-  if (room.status !== nextStatus) {
-    await prisma.room.update({
-      where: { id: roomId },
-      data: { status: nextStatus },
-    });
-  }
-}
-
 function revalidateTenantPaths() {
+  revalidatePath("/admin");
   revalidatePath("/admin/tenants");
   revalidatePath("/admin/rooms");
   revalidatePath("/kos");

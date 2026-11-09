@@ -1,5 +1,7 @@
-import { ReceiptText } from "lucide-react";
+import { Plus, ReceiptText } from "lucide-react";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -8,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { InvoiceActions } from "@/features/billing/components/invoice-actions";
 import {
   invoiceStatusLabels,
   invoiceStatusVariants,
@@ -28,6 +31,10 @@ type InvoiceRow = {
     id: string;
     name: string;
     phone: string;
+    room: {
+      number: string;
+      name: string | null;
+    } | null;
   } | null;
   booking: {
     id: string;
@@ -51,6 +58,12 @@ export function InvoicesTable({ invoices }: { invoices: InvoiceRow[] }) {
             Tagihan akan tampil di sini setelah booking dikonfirmasi.
           </p>
         </div>
+        <Button asChild>
+          <Link href="/admin/bills/new">
+            <Plus className="size-4" />
+            Tambah tagihan
+          </Link>
+        </Button>
       </div>
     );
   }
@@ -67,11 +80,13 @@ export function InvoicesTable({ invoices }: { invoices: InvoiceRow[] }) {
             <TableHead>Jumlah</TableHead>
             <TableHead>Jatuh tempo</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead className="w-32 text-right">Aksi</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {invoices.map((invoice) => {
             const tenantName = invoice.tenant?.name ?? invoice.booking?.name;
+            const room = invoice.booking?.room ?? invoice.tenant?.room;
 
             return (
               <TableRow key={invoice.id}>
@@ -87,14 +102,12 @@ export function InvoicesTable({ invoices }: { invoices: InvoiceRow[] }) {
                   </div>
                 </TableCell>
                 <TableCell>
-                  {invoice.booking?.room ? (
+                  {room ? (
                     <div>
-                      <p className="font-medium">
-                        {invoice.booking.room.number}
-                      </p>
-                      {invoice.booking.room.name ? (
+                      <p className="font-medium">{room.number}</p>
+                      {room.name ? (
                         <p className="text-xs text-muted-foreground">
-                          {invoice.booking.room.name}
+                          {room.name}
                         </p>
                       ) : null}
                     </div>
@@ -123,6 +136,13 @@ export function InvoicesTable({ invoices }: { invoices: InvoiceRow[] }) {
                   <Badge variant={invoiceStatusVariants[invoice.status]}>
                     {invoiceStatusLabels[invoice.status]}
                   </Badge>
+                </TableCell>
+                <TableCell>
+                  <InvoiceActions
+                    invoiceId={invoice.id}
+                    invoiceNumber={invoice.number}
+                    status={invoice.status}
+                  />
                 </TableCell>
               </TableRow>
             );

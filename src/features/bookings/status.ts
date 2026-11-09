@@ -1,8 +1,11 @@
-export type BookingStatus =
-  | "PENDING"
-  | "CONFIRMED"
-  | "CANCELLED"
-  | "EXPIRED";
+export const BOOKING_STATUSES = [
+  "PENDING",
+  "CONFIRMED",
+  "CANCELLED",
+  "EXPIRED",
+] as const;
+
+export type BookingStatus = (typeof BOOKING_STATUSES)[number];
 
 export const bookingStatusLabels: Record<BookingStatus, string> = {
   PENDING: "Menunggu",

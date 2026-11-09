@@ -1,5 +1,7 @@
-import { CalendarCheck } from "lucide-react";
+import { CalendarCheck, Plus } from "lucide-react";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -8,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { BookingActions } from "@/features/bookings/components/booking-actions";
 import {
   bookingStatusLabels,
   bookingStatusVariants,
@@ -47,6 +50,12 @@ export function BookingsTable({ bookings }: { bookings: BookingRow[] }) {
             Pengajuan sewa dari calon penghuni akan tampil di sini.
           </p>
         </div>
+        <Button asChild>
+          <Link href="/admin/bookings/new">
+            <Plus className="size-4" />
+            Tambah booking
+          </Link>
+        </Button>
       </div>
     );
   }
@@ -63,6 +72,7 @@ export function BookingsTable({ bookings }: { bookings: BookingRow[] }) {
             <TableHead>Durasi</TableHead>
             <TableHead>Tagihan</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead className="w-40 text-right">Aksi</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -108,6 +118,14 @@ export function BookingsTable({ bookings }: { bookings: BookingRow[] }) {
                 <Badge variant={bookingStatusVariants[booking.status]}>
                   {bookingStatusLabels[booking.status]}
                 </Badge>
+              </TableCell>
+              <TableCell>
+                <BookingActions
+                  bookingId={booking.id}
+                  bookingCode={booking.code}
+                  bookingName={booking.name}
+                  status={booking.status}
+                />
               </TableCell>
             </TableRow>
           ))}
