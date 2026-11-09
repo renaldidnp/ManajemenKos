@@ -1,5 +1,7 @@
-import { Users } from "lucide-react";
+import { MessageCircle, Pencil, Plus, Users } from "lucide-react";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -8,6 +10,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { DeleteTenantButton } from "@/features/tenants/components/delete-tenant-button";
+import { ToggleTenantStatusButton } from "@/features/tenants/components/toggle-tenant-status-button";
+import { tenantStatusLabels } from "@/features/tenants/schemas";
 import { formatDate } from "@/lib/format";
 
 type TenantRow = {
@@ -28,11 +33,6 @@ type TenantRow = {
   };
 };
 
-const statusLabels: Record<TenantRow["status"], string> = {
-  ACTIVE: "Aktif",
-  INACTIVE: "Nonaktif",
-};
-
 export function TenantsTable({ tenants }: { tenants: TenantRow[] }) {
   if (tenants.length === 0) {
     return (
@@ -45,6 +45,12 @@ export function TenantsTable({ tenants }: { tenants: TenantRow[] }) {
             ditambahkan oleh pengelola.
           </p>
         </div>
+        <Button asChild>
+          <Link href="/admin/tenants/new">
+            <Plus className="size-4" />
+            Tambah penghuni
+          </Link>
+        </Button>
       </div>
     );
   }
@@ -59,51 +65,94 @@ export function TenantsTable({ tenants }: { tenants: TenantRow[] }) {
             <TableHead>Masa sewa</TableHead>
             <TableHead>Tagihan</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead className="w-40 text-right">Aksi</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {tenants.map((tenant) => (
-            <TableRow key={tenant.id}>
-              <TableCell>
-                <div>
-                  <p className="font-medium">{tenant.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {[tenant.phone, tenant.email].filter(Boolean).join(" · ")}
-                  </p>
-                </div>
-              </TableCell>
-              <TableCell>
-                {tenant.room ? (
+          {tenants.map((tenant) => {
+            const whatsapp = tenant.phone
+              .replace(/\D/g, "")
+              .replace(/^0/, "62");
+
+            return (
+              <TableRow key={tenant.id}>
+                <TableCell>
                   <div>
-                    <p className="font-medium">{tenant.room.number}</p>
-                    {tenant.room.name ? (
-                      <p className="text-xs text-muted-foreground">
-                        {tenant.room.name}
-                      </p>
-                    ) : null}
+                    <p className="font-medium">{tenant.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {[tenant.phone, tenant.email].filter(Boolean).join(" · ")}
+                    </p>
                   </div>
-                ) : (
-                  <span className="text-muted-foreground">—</span>
-                )}
-              </TableCell>
-              <TableCell>
-                <p>{formatDate(tenant.startDate)}</p>
-                <p className="text-xs text-muted-foreground">
-                  {tenant.endDate
-                    ? `s.d. ${formatDate(tenant.endDate)}`
-                    : "Tanpa batas"}
-                </p>
-              </TableCell>
-              <TableCell>{tenant._count.invoices}</TableCell>
-              <TableCell>
-                <Badge
-                  variant={tenant.status === "ACTIVE" ? "default" : "secondary"}
-                >
-                  {statusLabels[tenant.status]}
-                </Badge>
-              </TableCell>
-            </TableRow>
-          ))}
+                </TableCell>
+                <TableCell>
+                  {tenant.room ? (
+                    <div>
+                      <p className="font-medium">{tenant.room.number}</p>
+                      {tenant.room.name ? (
+                        <p className="text-xs text-muted-foreground">
+                          {tenant.room.name}
+                        </p>
+                      ) : null}
+                    </div>
+                  ) : (
+                    <span className="text-muted-foreground">—</span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <p>{formatDate(tenant.startDate)}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {tenant.endDate
+                      ? `s.d. ${formatDate(tenant.endDate)}`
+                      : "Tanpa batas"}
+                  </p>
+                </TableCell>
+                <TableCell>{tenant._count.invoices}</TableCell>
+                <TableCell>
+                  <Badge
+                    variant={
+                      tenant.status === "ACTIVE" ? "default" : "secondary"
+                    }
+                  >
+                    {tenantStatusLabels[tenant.status]}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center justify-end gap-1">
+                    {whatsapp ? (
+                      <Button asChild variant="ghost" size="icon">
+                        <a
+                          href={`https://wa.me/${whatsapp}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-label={`Chat WhatsApp ${tenant.name}`}
+                          title="Chat WhatsApp"
+                        >
+                          <MessageCircle className="size-4" />
+                        </a>
+                      </Button>
+                    ) : null}
+                    <ToggleTenantStatusButton
+                      tenantId={tenant.id}
+                      status={tenant.status}
+                    />
+                    <Button asChild variant="ghost" size="icon">
+                      <Link
+                        href={`/admin/tenants/${tenant.id}/edit`}
+                        aria-label="Ubah penghuni"
+                        title="Ubah penghuni"
+                      >
+                        <Pencil className="size-4" />
+                      </Link>
+                    </Button>
+                    <DeleteTenantButton
+                      tenantId={tenant.id}
+                      tenantName={tenant.name}
+                    />
+                  </div>
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>

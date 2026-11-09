@@ -25,3 +25,33 @@ export async function getTenants() {
     },
   });
 }
+
+export async function getTenant(id: string) {
+  return prisma.tenant.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      name: true,
+      phone: true,
+      email: true,
+      idCardNumber: true,
+      emergencyContact: true,
+      roomId: true,
+      status: true,
+      startDate: true,
+      endDate: true,
+    },
+  });
+}
+
+export async function getTenantRoomOptions() {
+  return prisma.room.findMany({
+    orderBy: { number: "asc" },
+    select: {
+      id: true,
+      number: true,
+      name: true,
+      status: true,
+    },
+  });
+}
