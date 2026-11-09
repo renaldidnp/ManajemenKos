@@ -1,7 +1,7 @@
 export const siteConfig = {
-  name: "Kos",
+  name: "KosKita",
   description:
-    "Temukan kamar kos nyaman, ajukan sewa online, dan kelola kos dalam satu tempat.",
+    "KosKita adalah hunian kos nyaman dengan satu pengelola. Lihat kamar, fasilitas, dan ajukan sewa langsung tanpa perantara.",
   url: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
 };
 

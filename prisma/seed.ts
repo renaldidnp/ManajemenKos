@@ -24,13 +24,13 @@ const auth = betterAuth({
 
 async function seedKos() {
   const kos = await prisma.kos.upsert({
-    where: { slug: "kos-melati" },
+    where: { slug: "koskita" },
     update: {},
     create: {
-      name: "Kos Melati",
-      slug: "kos-melati",
+      name: "KosKita",
+      slug: "koskita",
       description:
-        "Kos putri yang nyaman, bersih, dan dekat dengan kampus serta pusat perbelanjaan.",
+        "KosKita adalah hunian kos nyaman dengan satu pengelola, dekat dengan kampus serta pusat perbelanjaan.",
       address: "Jl. Melati No. 10",
       city: "Bandung",
       province: "Jawa Barat",
