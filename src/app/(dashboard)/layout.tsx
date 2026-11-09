@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { DashboardMobileNav } from "@/components/layout/dashboard-mobile-nav";
 import { adminNav, tenantNav } from "@/config/nav";
 import { siteConfig } from "@/config/site";
 import { UserMenu } from "@/features/auth/components/user-menu";
@@ -45,11 +46,14 @@ export default async function DashboardLayout({
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-16 items-center justify-between border-b px-6">
-          <span className="text-sm font-medium">Dashboard</span>
+        <header className="flex h-16 items-center justify-between border-b px-4 md:px-6">
+          <div className="flex items-center gap-2">
+            <DashboardMobileNav role={role} />
+            <span className="text-sm font-medium">Dashboard</span>
+          </div>
           <UserMenu />
         </header>
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1 p-4 md:p-6">{children}</main>
       </div>
     </div>
   );
