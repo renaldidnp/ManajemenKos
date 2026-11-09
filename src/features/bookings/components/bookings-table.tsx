@@ -8,6 +8,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  bookingStatusLabels,
+  bookingStatusVariants,
+  type BookingStatus,
+} from "@/features/bookings/status";
 import { formatDate } from "@/lib/format";
 
 type BookingRow = {
@@ -18,7 +23,7 @@ type BookingRow = {
   email: string | null;
   moveInDate: Date;
   durationMonths: number;
-  status: "PENDING" | "CONFIRMED" | "CANCELLED" | "EXPIRED";
+  status: BookingStatus;
   room: {
     id: string;
     number: string;
@@ -29,23 +34,6 @@ type BookingRow = {
     number: string;
     status: string;
   } | null;
-};
-
-const statusLabels: Record<BookingRow["status"], string> = {
-  PENDING: "Menunggu",
-  CONFIRMED: "Dikonfirmasi",
-  CANCELLED: "Dibatalkan",
-  EXPIRED: "Kedaluwarsa",
-};
-
-const statusVariants: Record<
-  BookingRow["status"],
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  PENDING: "secondary",
-  CONFIRMED: "default",
-  CANCELLED: "destructive",
-  EXPIRED: "outline",
 };
 
 export function BookingsTable({ bookings }: { bookings: BookingRow[] }) {
@@ -117,8 +105,8 @@ export function BookingsTable({ bookings }: { bookings: BookingRow[] }) {
                 )}
               </TableCell>
               <TableCell>
-                <Badge variant={statusVariants[booking.status]}>
-                  {statusLabels[booking.status]}
+                <Badge variant={bookingStatusVariants[booking.status]}>
+                  {bookingStatusLabels[booking.status]}
                 </Badge>
               </TableCell>
             </TableRow>

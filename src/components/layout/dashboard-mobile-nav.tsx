@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu } from "lucide-react";
+import { ArrowLeft, Building2, Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -17,7 +17,10 @@ import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
 function isActive(pathname: string, href: string, rootHref: string) {
-  return pathname === href || (href !== rootHref && pathname.startsWith(`${href}/`));
+  return (
+    pathname === href ||
+    (href !== rootHref && pathname.startsWith(`${href}/`))
+  );
 }
 
 export function DashboardMobileNav({ role }: { role: "admin" | "tenant" }) {
@@ -35,7 +38,10 @@ export function DashboardMobileNav({ role }: { role: "admin" | "tenant" }) {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-72 gap-0 p-0">
-        <SheetHeader className="h-16 flex-row items-center gap-2 border-b px-6 py-0 pr-12">
+        <SheetHeader className="h-16 flex-row items-center gap-3 border-b px-5 py-0 pr-12">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-sm">
+            <Building2 className="size-5" />
+          </span>
           <SheetTitle className="text-base tracking-tight">
             {siteConfig.name}
           </SheetTitle>
@@ -44,29 +50,42 @@ export function DashboardMobileNav({ role }: { role: "admin" | "tenant" }) {
           </span>
         </SheetHeader>
         <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
-          {nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setOpen(false)}
-              className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted hover:text-foreground",
-                isActive(pathname, item.href, rootHref)
-                  ? "bg-muted font-medium text-foreground"
-                  : "text-muted-foreground"
-              )}
-            >
-              <item.icon className="size-4" />
-              {item.title}
-            </Link>
-          ))}
+          {nav.map((item) => {
+            const active = isActive(pathname, item.href, rootHref);
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setOpen(false)}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
+                  active
+                    ? "bg-emerald-50 font-medium text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                )}
+              >
+                <item.icon
+                  className={cn(
+                    "size-4",
+                    active
+                      ? "text-emerald-600 dark:text-emerald-400"
+                      : "text-muted-foreground group-hover:text-foreground",
+                  )}
+                />
+                {item.title}
+              </Link>
+            );
+          })}
         </nav>
         <div className="border-t p-3">
           <Link
             href="/"
             onClick={() => setOpen(false)}
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
+            <ArrowLeft className="size-4" />
             Kembali ke situs
           </Link>
         </div>

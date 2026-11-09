@@ -8,13 +8,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  invoiceStatusLabels,
+  invoiceStatusVariants,
+  type InvoiceStatus,
+} from "@/features/billing/status";
 import { formatCurrency, formatDate } from "@/lib/format";
 
 type InvoiceRow = {
   id: string;
   number: string;
   amount: number;
-  status: "UNPAID" | "PAID" | "OVERDUE" | "CANCELLED";
+  status: InvoiceStatus;
   periodStart: Date;
   periodEnd: Date;
   dueDate: Date;
@@ -33,23 +38,6 @@ type InvoiceRow = {
       name: string | null;
     } | null;
   } | null;
-};
-
-const statusLabels: Record<InvoiceRow["status"], string> = {
-  UNPAID: "Belum dibayar",
-  PAID: "Sudah dibayar",
-  OVERDUE: "Terlambat",
-  CANCELLED: "Dibatalkan",
-};
-
-const statusVariants: Record<
-  InvoiceRow["status"],
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  UNPAID: "secondary",
-  PAID: "default",
-  OVERDUE: "destructive",
-  CANCELLED: "outline",
 };
 
 export function InvoicesTable({ invoices }: { invoices: InvoiceRow[] }) {
@@ -132,8 +120,8 @@ export function InvoicesTable({ invoices }: { invoices: InvoiceRow[] }) {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={statusVariants[invoice.status]}>
-                    {statusLabels[invoice.status]}
+                  <Badge variant={invoiceStatusVariants[invoice.status]}>
+                    {invoiceStatusLabels[invoice.status]}
                   </Badge>
                 </TableCell>
               </TableRow>
